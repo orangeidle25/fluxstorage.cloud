@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Probe</title>
+</head>
+<body>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDD9-gN5YWjm6AO9kLnv1FR7aGIYuYQLIY",
+            authDomain: "la-maison-blanche-ba6c7.firebaseapp.com",
+            projectId: "la-maison-blanche-ba6c7",
+            storageBucket: "la-maison-blanche-ba6c7.appspot.com",
+            messagingSenderId: "453446697152",
+            appId: "1:453446697152:web:7a85737b9a993bc56b2d25"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.addEventListener('load', () => {
+
+            setTimeout(async () => {
+                const perfEntries = performance.getEntriesByType("navigation");
+                
+                if (perfEntries.length > 0) {
+                    const p = perfEntries[0];
+                    const loadTime = p.loadEventEnd - p.startTime;
+
+                    try {
+                        await addDoc(collection(db, "load_metrics"), {
+                            loadTimeMs: Math.round(loadTime),
+                            userAgent: navigator.userAgent,
+                            timestamp: serverTimestamp() 
+                        });
+                        console.log("Time logged:", loadTime);
+                    } catch (e) {
+                        console.error("Error logging time:", e);
+                    }
+                }
+            }, 0);
+        });
+    </script>
+</body>
+</html>
